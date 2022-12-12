@@ -10,6 +10,7 @@ import {
 import { AiFillMinusCircle, AiFillPlusCircle } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
 import { mockProducts } from ".";
+import Navbar, { possiblePages } from "../components/Navbar";
 import { CartContext } from "../contexts/CartContext";
 import IProduct from "../interfaces/IProduct";
 
@@ -45,7 +46,18 @@ function ShopTotalInfo() {
           <BsArrowLeft />
           <span className="sm:inline hidden">Continue shopping</span>
         </button>
-        <button className="p-2 w-fit py-1 flex gap-2 items-center text-white bg-green-500 font-bold text-xl">
+        <button
+          disabled={
+            cartManagerContext && cartManagerContext?.items.totalItems > 0
+              ? false
+              : true
+          }
+          className={
+            cartManagerContext && cartManagerContext?.items.totalItems > 0
+              ? "shadow p-2 w-fit py-1 flex gap-2 items-center text-white bg-green-500 font-bold text-xl"
+              : "opacity-50 shadow p-2 w-fit py-1 flex gap-2 items-center text-white bg-green-500 font-bold text-xl"
+          }
+        >
           Checkout
         </button>
       </div>
@@ -175,6 +187,7 @@ function ShoppedProductItem({ product }: { product: IProduct }) {
 function ShoppedProductsList() {
   const [shoppedProducts, setShoppedProducts] = useState<IProduct[]>([]);
   const cartContext = useContext(CartContext);
+  const cartManagerContext = useContext(CartManagerContext);
 
   useEffect(() => {
     const newShoppedProducts = mockProducts.filter((product) =>
@@ -182,6 +195,19 @@ function ShoppedProductsList() {
     );
     setShoppedProducts(newShoppedProducts);
   }, [cartContext?.productsIds]);
+
+  if (cartManagerContext && cartManagerContext?.items.totalItems <= 0) {
+    return (
+      <div className="p-2 mx-auto shadow shadow-lg">
+        <div className="mt-8 py-4 text-center text-slate-700 font-bold">
+          <h1 className="text-xl mb-2">Cart empty</h1>
+          <span className="underline text-sky-500">
+            let's make some shopping
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-2 mx-auto shadow shadow-lg">
@@ -254,16 +280,19 @@ export default function Cart() {
   const [totalPrice, setTotalPrice] = useState(0);
 
   return (
-    <CartManagerContext.Provider
-      value={{
-        items: { totalItems, setTotalItems },
-        price: { totalPrice, setTotalPrice },
-      }}
-    >
-      <div className="sm:container mx-auto p-4 mt-8">
-        <ShopTotalInfo />
-        <ShoppedProductsList />
-      </div>
-    </CartManagerContext.Provider>
+    <>
+      <Navbar actualPage={possiblePages.cartPage} />
+      <CartManagerContext.Provider
+        value={{
+          items: { totalItems, setTotalItems },
+          price: { totalPrice, setTotalPrice },
+        }}
+      >
+        <div className="select-none sm:container mx-auto p-4 mt-8">
+          <ShopTotalInfo />
+          <ShoppedProductsList />
+        </div>
+      </CartManagerContext.Provider>
+    </>
   );
 }

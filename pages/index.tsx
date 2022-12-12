@@ -42,7 +42,7 @@ export default function Home() {
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
-      <main>
+      <main className="select-none">
         <Navbar />
         <div className="sm:container mx-auto">
           <div className="px-4 mx-auto mt-16 sm:px-0 sm:grid sm:grid-cols-2 sm:gap-4 md:grid-cols-3">

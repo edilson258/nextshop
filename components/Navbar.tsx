@@ -6,7 +6,13 @@ import {
   AiOutlineClose,
 } from "react-icons/ai";
 
-export default function Navbar() {
+export enum possiblePages {
+  homePage,
+  productsPage,
+  cartPage,
+}
+
+export default function Navbar({ actualPage }: { actualPage?: possiblePages }) {
   const router = useRouter();
   const [isOpenMenu, setIsOpenMenu] = useState(false);
   const menuList = useRef<HTMLUListElement>(null);
@@ -40,19 +46,39 @@ export default function Navbar() {
             ref={menuList}
             className="select-none sm:flex text-center sm:gap-4 sm:items-center z-1 sm:z-auto sm:static absolute bg-white w-full left-0 sm:w-auto mt-2 sm:mt-0 sm:py-0 py-4 sm:pl-0 pl-4 sm:opacity-100 hidden transition-all ease-in duration-100"
           >
-            <li className="my-2 sm:my-0 block">
-              <a href="#" className="text-md hover:text-cyan-500 duration-500">
+            <li
+              onClick={() => router.push("/products")}
+              className="my-2 sm:my-0 block"
+            >
+              <p
+                className={
+                  actualPage === possiblePages.productsPage
+                    ? "text-md text-sky-500 font-bold duration-500"
+                    : "text-md hover:text-sky-500 hover:font-bold duration-500"
+                }
+              >
                 PRODUCTS
-              </a>
+              </p>
             </li>
             <li
               onClick={() => router.push("/cart")}
               className="my-2 sm:my-0 block"
             >
-              <p className="text-md hover:text-cyan-500 duration-500">CART</p>
+              <p
+                className={
+                  actualPage === possiblePages.cartPage
+                    ? "text-md text-sky-500 font-bold duration-500"
+                    : "text-md hover:text-sky-500 hover:font-bold duration-500"
+                }
+              >
+                CART
+              </p>
             </li>
             <li className="my-2 sm:my-0 block">
-              <a href="#" className="text-md hover:text-cyan-500 duration-500">
+              <a
+                href="#"
+                className="text-md hover:text-sky-500 hover:font-bold duration-500"
+              >
                 LOGIN
               </a>
             </li>
