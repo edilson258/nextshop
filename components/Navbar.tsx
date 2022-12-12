@@ -38,7 +38,7 @@ export default function Navbar() {
 
           <ul
             ref={menuList}
-            className="sm:flex text-center sm:gap-4 sm:items-center z-1 sm:z-auto sm:static absolute bg-white w-full left-0 sm:w-auto mt-2 sm:mt-0 sm:py-0 py-4 sm:pl-0 pl-4 sm:opacity-100 hidden transition-all ease-in duration-100"
+            className="select-none sm:flex text-center sm:gap-4 sm:items-center z-1 sm:z-auto sm:static absolute bg-white w-full left-0 sm:w-auto mt-2 sm:mt-0 sm:py-0 py-4 sm:pl-0 pl-4 sm:opacity-100 hidden transition-all ease-in duration-100"
           >
             <li className="my-2 sm:my-0 block">
               <a href="#" className="text-md hover:text-cyan-500 duration-500">

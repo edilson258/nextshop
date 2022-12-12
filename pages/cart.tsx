@@ -1,5 +1,12 @@
 import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
+import {
+  useContext,
+  useEffect,
+  useState,
+  createContext,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { AiFillMinusCircle, AiFillPlusCircle } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
 import { mockProducts } from ".";
@@ -8,6 +15,26 @@ import IProduct from "../interfaces/IProduct";
 
 function ShopTotalInfo() {
   const router = useRouter();
+  const cartManagerContext = useContext(CartManagerContext);
+  const cartProductsContext = useContext(CartContext);
+
+  useEffect(() => {
+    const newTotalItems = cartProductsContext?.productsIds.length;
+    cartManagerContext?.items.setTotalItems(newTotalItems || 0);
+    const productPricesArray = mockProducts
+      ?.filter((product) =>
+        cartProductsContext?.productsIds.includes(product.ID)
+      )
+      ?.map((p) => p.price);
+
+    if (productPricesArray.length > 0) {
+      const newTotalPrice = productPricesArray.reduce(
+        (prevValue, actualValue) => prevValue + actualValue
+      );
+      cartManagerContext?.price.setTotalPrice(newTotalPrice);
+    }
+  }, []);
+
   return (
     <div className="p-2 mx-auto shadow shadow-lg">
       <div className="flex items-center justify-between">
@@ -47,10 +74,10 @@ function ShopTotalInfo() {
                   <tbody>
                     <tr className="">
                       <td className="text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                        15
+                        {cartManagerContext?.items.totalItems}
                       </td>
                       <td className="text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                        658.00
+                        {cartManagerContext?.price.totalPrice}
                       </td>
                     </tr>
                   </tbody>
@@ -64,6 +91,87 @@ function ShopTotalInfo() {
   );
 }
 
+function ShoppedProductItem({ product }: { product: IProduct }) {
+  const [productQuant, setProductQuant] = useState(1);
+  const [subTotalPrice, setSubTotalPrice] = useState(
+    product.price * productQuant
+  );
+
+  const cartManagerContext = useContext(CartManagerContext);
+  const cartProductsContext = useContext(CartContext);
+
+  function handleIncreaseProdQuant() {
+    const newProdQuant = productQuant + 1;
+
+    // compute sub total items
+    setProductQuant(newProdQuant);
+
+    // compute sub total price
+    const newSubTotalPrice = product.price * newProdQuant;
+    setSubTotalPrice(newSubTotalPrice);
+
+    // compute total items
+    cartManagerContext?.items.setTotalItems((old) => old + 1);
+
+    // compute total price
+    cartManagerContext?.price.setTotalPrice((old) => old + product.price);
+  }
+
+  function handleDecreaseProdQuant() {
+    const newProdQuant = productQuant - 1;
+
+    // compute sub total items
+    setProductQuant(newProdQuant);
+
+    // compute sub total price
+    const newSubTotalPrice = product.price * newProdQuant;
+    setSubTotalPrice(newSubTotalPrice);
+
+    // compute total items
+    cartManagerContext?.items.setTotalItems((old) => old - 1);
+
+    // compute total price
+    cartManagerContext?.price.setTotalPrice((old) => old - product.price);
+
+    // remove product from cart
+    if (newProdQuant <= 0) {
+      cartProductsContext?.setProductsIds(
+        cartProductsContext.productsIds.filter((id) => id !== product.ID)
+      );
+    }
+  }
+
+  return (
+    <tr className="border-b">
+      <td className="text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+        <img src={product.image} className="object-cover w-16 h-16" />
+      </td>
+      <td className="text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+        {product.name}
+      </td>
+      <td className="text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+        <div className="flex gap-2 items-center text-slate-700">
+          <AiFillMinusCircle
+            onClick={handleDecreaseProdQuant}
+            className="text-2xl"
+          />
+          {productQuant}
+          <AiFillPlusCircle
+            onClick={handleIncreaseProdQuant}
+            className="text-2xl"
+          />
+        </div>
+      </td>
+      <td className="text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+        {product.price}
+      </td>
+      <td className="text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+        {subTotalPrice}
+      </td>
+    </tr>
+  );
+}
+
 function ShoppedProductsList() {
   const [shoppedProducts, setShoppedProducts] = useState<IProduct[]>([]);
   const cartContext = useContext(CartContext);
@@ -73,7 +181,7 @@ function ShoppedProductsList() {
       cartContext?.productsIds.includes(product.ID)
     );
     setShoppedProducts(newShoppedProducts);
-  }, []);
+  }, [cartContext?.productsIds]);
 
   return (
     <div className="p-2 mx-auto shadow shadow-lg">
@@ -117,30 +225,7 @@ function ShoppedProductsList() {
                   </thead>
                   <tbody>
                     {shoppedProducts.map((product) => (
-                      <tr className="border-b">
-                        <td className="text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                          <img
-                            src={product.image}
-                            className="object-cover w-16 h-16"
-                          />
-                        </td>
-                        <td className="text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                          {product.name}
-                        </td>
-                        <td className="text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                          <div className="flex gap-2 items-center text-slate-700">
-                            <AiFillMinusCircle className="text-2xl" />
-                            {1}
-                            <AiFillPlusCircle className="text-2xl" />
-                          </div>
-                        </td>
-                        <td className="text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                          {product.price}
-                        </td>
-                        <td className="text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                          {product.price}
-                        </td>
-                      </tr>
+                      <ShoppedProductItem key={product.ID} product={product} />
                     ))}
                   </tbody>
                 </table>
@@ -153,11 +238,32 @@ function ShoppedProductsList() {
   );
 }
 
+const CartManagerContext = createContext<{
+  items: {
+    totalItems: number;
+    setTotalItems: Dispatch<SetStateAction<number>>;
+  };
+  price: {
+    totalPrice: number;
+    setTotalPrice: Dispatch<SetStateAction<number>>;
+  };
+} | null>(null);
+
 export default function Cart() {
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPrice, setTotalPrice] = useState(0);
+
   return (
-    <div className="sm:container mx-auto p-4 mt-8">
-      <ShopTotalInfo />
-      <ShoppedProductsList />
-    </div>
+    <CartManagerContext.Provider
+      value={{
+        items: { totalItems, setTotalItems },
+        price: { totalPrice, setTotalPrice },
+      }}
+    >
+      <div className="sm:container mx-auto p-4 mt-8">
+        <ShopTotalInfo />
+        <ShoppedProductsList />
+      </div>
+    </CartManagerContext.Provider>
   );
 }

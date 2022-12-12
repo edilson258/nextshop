@@ -2,14 +2,13 @@ import Head from "next/head";
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import ProductItem from "../components/ProductItem";
-import CartProvider from "../contexts/CartContext";
 import IProduct from "../interfaces/IProduct";
 
 export const mockProducts: IProduct[] = [
   {
     ID: "8j2j2kwkwowo",
     name: "Nike Air max",
-    price: "460",
+    price: 500,
     orders: "165",
     image:
       "https://raw.githubusercontent.com/edilson258/files/main/022810ID.jpg",
@@ -17,7 +16,7 @@ export const mockProducts: IProduct[] = [
   {
     ID: "863h3j33i876",
     name: "Dunk High",
-    price: "732",
+    price: 800,
     orders: "594",
     image:
       "https://raw.githubusercontent.com/edilson258/files/main/dunk-high-1985-shoes-rsx4JL.jpeg",
@@ -25,7 +24,7 @@ export const mockProducts: IProduct[] = [
   {
     ID: "9jndhu123hsj7",
     name: "Fly Easy",
-    price: "548",
+    price: 1000,
     orders: "293",
     image:
       "https://raw.githubusercontent.com/edilson258/files/main/go-flyease-easy-on-off-shoes-6nd2cc.jpeg",
