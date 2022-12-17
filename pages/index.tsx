@@ -1,40 +1,23 @@
 import Head from "next/head";
-import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import ProductItem from "../components/ProductItem";
-import IProduct from "../interfaces/IProduct";
 
-export const mockProducts: IProduct[] = [
-  {
-    ID: "8j2j2kwkwowo",
-    name: "Nike Air max",
-    price: 500,
-    orders: "165",
-    image:
-      "https://raw.githubusercontent.com/edilson258/files/main/022810ID.jpg",
-  },
-  {
-    ID: "863h3j33i876",
-    name: "Dunk High",
-    price: 800,
-    orders: "594",
-    image:
-      "https://raw.githubusercontent.com/edilson258/files/main/dunk-high-1985-shoes-rsx4JL.jpeg",
-  },
-  {
-    ID: "9jndhu123hsj7",
-    name: "Fly Easy",
-    price: 1000,
-    orders: "293",
-    image:
-      "https://raw.githubusercontent.com/edilson258/files/main/go-flyease-easy-on-off-shoes-6nd2cc.jpeg",
-  },
-];
+// redux
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../redux/store";
+import { useEffect } from "react";
+import { setProducts } from "../redux/productsSlice";
+import { getProducts } from "../services/productsServices";
 
 export default function Home() {
-  const [products, setProducts] = useState<IProduct[]>([]);
+  const productState = useSelector((state: RootState) => state.productState);
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    setProducts(mockProducts);
+    (async () => {
+      const products = await getProducts();
+      dispatch(setProducts(products));
+    })();
   }, []);
 
   return (
@@ -46,7 +29,7 @@ export default function Home() {
         <Navbar />
         <div className="sm:container mx-auto">
           <div className="px-4 mx-auto mt-16 sm:px-0 sm:grid sm:grid-cols-2 sm:gap-4 md:grid-cols-3">
-            {products.map((p) => (
+            {productState.products.map((p) => (
               <ProductItem key={p.ID} product={p} />
             ))}
           </div>

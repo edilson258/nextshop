@@ -4,4 +4,5 @@ export default interface IProduct {
   price: number;
   orders: string;
   image: string;
+  slug: string;
 }

@@ -9,20 +9,26 @@ import {
 } from "react";
 import { AiFillMinusCircle, AiFillPlusCircle } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
-import { mockProducts } from ".";
+import { useDispatch, useSelector } from "react-redux";
 import Navbar, { possiblePages } from "../components/Navbar";
 import { CartContext } from "../contexts/CartContext";
 import IProduct from "../interfaces/IProduct";
+import { setProducts } from "../redux/productsSlice";
+import { RootState } from "../redux/store";
+import { getProducts } from "../services/productsServices";
 
 function ShopTotalInfo() {
   const router = useRouter();
   const cartManagerContext = useContext(CartManagerContext);
   const cartProductsContext = useContext(CartContext);
 
+  // redux
+  const productState = useSelector((state: RootState) => state.productState);
+
   useEffect(() => {
     const newTotalItems = cartProductsContext?.productsIds.length;
     cartManagerContext?.items.setTotalItems(newTotalItems || 0);
-    const productPricesArray = mockProducts
+    const productPricesArray = productState.products
       ?.filter((product) =>
         cartProductsContext?.productsIds.includes(product.ID)
       )
@@ -41,7 +47,7 @@ function ShopTotalInfo() {
       <div className="flex items-center justify-between">
         <button
           onClick={() => router.back()}
-          className="border p-2 w-fit py-1 flex gap-2 items-center text-slate-700 font-bold text-lg"
+          className="border p-2 w-fit py-1 flex gap-2 items-center text-slate-700 text-lg"
         >
           <BsArrowLeft />
           <span className="sm:inline hidden">Continue shopping</span>
@@ -189,8 +195,10 @@ function ShoppedProductsList() {
   const cartContext = useContext(CartContext);
   const cartManagerContext = useContext(CartManagerContext);
 
+  const productState = useSelector((state: RootState) => state.productState);
+
   useEffect(() => {
-    const newShoppedProducts = mockProducts.filter((product) =>
+    const newShoppedProducts = productState.products.filter((product) =>
       cartContext?.productsIds.includes(product.ID)
     );
     setShoppedProducts(newShoppedProducts);
@@ -278,6 +286,16 @@ const CartManagerContext = createContext<{
 export default function Cart() {
   const [totalItems, setTotalItems] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
+
+  // redux
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    (async () => {
+      const products = await getProducts();
+      dispatch(setProducts(products));
+    })();
+  }, []);
 
   return (
     <>

@@ -1,8 +1,22 @@
 import Navbar, { possiblePages } from "../components/Navbar";
-import { mockProducts as products } from ".";
 import ProductItem from "../components/ProductItem";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { setProducts } from "../redux/productsSlice";
+import { getProducts } from "../services/productsServices";
+import { RootState } from "../redux/store";
 
 export default function Products() {
+  const productState = useSelector((state: RootState) => state.productState);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    (async () => {
+      const products = await getProducts();
+      dispatch(setProducts(products));
+    })();
+  }, []);
+
   return (
     <>
       <main className="select-none">
@@ -12,7 +26,7 @@ export default function Products() {
             Hot line
           </h3>
           <div className="px-4 mx-auto sm:px-0 sm:grid sm:grid-cols-2 sm:gap-4 md:grid-cols-3">
-            {products.map((p) => (
+            {productState.products.map((p) => (
               <ProductItem key={p.ID} product={p} />
             ))}
           </div>

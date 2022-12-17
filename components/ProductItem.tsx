@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 import { BsCartPlus, BsFillCartCheckFill } from "react-icons/bs";
@@ -5,6 +6,7 @@ import { CartContext } from "../contexts/CartContext";
 import IProduct from "../interfaces/IProduct";
 
 export default function ProductItem({ product }: { product: IProduct }) {
+  const router = useRouter();
   const [isProductInCart, setIsProductInCart] = useState(false);
   const cartProductsContext = useContext(CartContext);
 
@@ -33,6 +35,7 @@ export default function ProductItem({ product }: { product: IProduct }) {
   return (
     <div className="p-2 rounded shadow mb-4 bg-gray-100">
       <img
+        onClick={() => router.push(`/products/${product.slug}`)}
         className="object-cover w-64 h-64 mx-auto sm:w-48 sm:h-48"
         src={product.image}
       />

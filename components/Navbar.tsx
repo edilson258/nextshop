@@ -31,7 +31,7 @@ export default function Navbar({ actualPage }: { actualPage?: possiblePages }) {
           <div className="flex justify-between items-center">
             <div className="flex gap-2 text-2xl font-bold text-slate-700 items-center">
               <AiOutlineShopping />
-              <h1>OpenShop</h1>
+              <h1 onClick={() => router.push("/")}>OpenShop</h1>
             </div>
             <div onClick={handleMenu} className="sm:hidden">
               {isOpenMenu ? (
