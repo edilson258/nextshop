@@ -29,9 +29,11 @@ export default function Home() {
         <Navbar />
         <div className="sm:container mx-auto">
           <div className="px-4 mx-auto mt-16 sm:px-0 sm:grid sm:grid-cols-2 sm:gap-4 md:grid-cols-3">
-            {productState.products.map((p) => (
-              <ProductItem key={p.ID} product={p} />
-            ))}
+            {productState.products
+              .sort(() => 0.5 - Math.random())
+              .map((p) => (
+                <ProductItem key={p.ID} product={p} />
+              ))}
           </div>
         </div>
       </main>
